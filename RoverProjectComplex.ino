@@ -9,7 +9,7 @@ AF_DCMotor M4(4); //motor direita trás
 
 //Global Variables
 
-const int VELOCIDADEMAX = 100; // Variável para a velocidade das rodas do carrinho
+const int VELOCIDADEMAX = 70; // Variável para a velocidade das rodas do carrinho
 
 //Sensor Ports Constants
 const int sensorLeft          = 22;
@@ -88,36 +88,25 @@ void extremeLeft(int velocity){
 }
 
 void moveToRight(int velocity){
-  M1.setSpeed(velocity);
-  M1.run(FORWARD);
-  M2.setSpeed(0);
-  M2.run(BACKWARD);
-  M3.setSpeed(velocity);
-  M3.run(FORWARD);
-  M4.setSpeed(velocity-20);
-  M4.run(BACKWARD);
+  M1.setSpeed(velocity-20);
+  M1.run(BACKWARD);
+  M2.setSpeed(velocity+20);
+  M2.run(FORWARD);
+  M3.setSpeed(velocity-20);
+  M3.run(BACKWARD);
+  M4.setSpeed(velocity+20);
+  M4.run(FORWARD);
 }
 
 void moveToLeft(int velocity){
-  M1.setSpeed(0);
+  M1.setSpeed(velocity+20);
   M1.run(BACKWARD);
-  M2.setSpeed(velocity);
-  M2.run(BACKWARD);
-  M3.setSpeed(velocity-20);
+  M2.setSpeed(velocity-20);
+  M2.run(FORWARD);
+  M3.setSpeed(velocity+20);
   M3.run(BACKWARD);
-  M4.setSpeed(velocity);
-  M4.run(BACKWARD);
-}
-
-void parado() {
-  M1.setSpeed(0);
-  M1.run(BACKWARD);
-  M2.setSpeed(0);
-  M2.run(BACKWARD);
-  M3.setSpeed(0);
-  M3.run(BACKWARD);
-  M4.setSpeed(0);
-  M4.run(BACKWARD);
+  M4.setSpeed(velocity-20);
+  M4.run(FORWARD);
 }
 
 void setup() {
@@ -174,56 +163,37 @@ void loop() {
   getUltraSensorsValue();
   getInfraRedSensorsValue();
 
-
-    if( ultraMiddleState <= 15.0 ){ 
+    if( ultraMiddleState <= 30.0 ) {
 
         // Se estiver muito próximo do alvo, deverá dar uma ré, parar e verificar qual lado poderá ir
-        moveBackward(VELOCIDADEMAX);
+        //moveBackward(VELOCIDADEMAX);
+        
+        //delay(100);
+         
+        if(ultraLeftState < ultraRightState && ultraLeftState < 60.0 ){
+            moveToRight(VELOCIDADEMAX);
+        } else if( ultraRightState < ultraLeftState && ultraRightState < 60.0 ){
+            moveToLeft(VELOCIDADEMAX);
+        }
 
-        delay(70);
-        
-        parado();
-        
-        delay(70);
-      
-        if(ultraLeftState < ultraRightState)
-              extremeRight(VELOCIDADEMAX);
-        else if(ultraRightState < ultraMiddleState)
-              extremeLeft(VELOCIDADEMAX);
+        delay(80);
               
-    } else if((ultraLeftState <= 25.0) && (ultraLeftState < ultraRightState)) {
+    } else if(ultraLeftState <= 30.0) {
       
           // Verifica o lado esquerdo para poder desviar para a direita
-          if(ultraMiddleState <= ultraLeftState){
-            extremeRight(VELOCIDADEMAX);
-          } else{
-            moveToRight(VELOCIDADEMAX);
-          }
+          extremeRight(VELOCIDADEMAX);
           
-      } else if((ultraRightState <= 25.0) && (ultraRightState < ultraLeftState)) {
+    } else if(ultraRightState <= 30.0) {
         
            // Verifica o lado direito para poder desviar para a esquerdo
-           if(ultraMiddleState <= ultraRightState){
-             extremeLeft(VELOCIDADEMAX);
-           } else{
-             moveToLeft(VELOCIDADEMAX);
-           }
+           extremeLeft(VELOCIDADEMAX);
            
-      }/*
-     else if((ultraMiddleState <= 20.0) && (ultraMiddleState <= ultraLeftState) && (ultraMiddleState < ultraRightState)){  
-      
-          if(ultraRightState < ultraLeftState){
-              extremeLeft(VELOCIDADEMAX);
-          }
-          else{
-            extremeRight(VELOCIDADEMAX);  
-          }
-    }*/ else {
+    } else {
         // Se não precisar desviar, irá seguir em frente
         moveForward(VELOCIDADEMAX);
     }
 
     // Delay para diminuir a auto frequência no carrinho
-    delay(100);
-      
+    delay(150);
+  
 }
