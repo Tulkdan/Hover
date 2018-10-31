@@ -9,7 +9,7 @@ AF_DCMotor M4(4); //motor direita trás
 
 //Global Variables
 
-const int VELOCIDADEMAX = 70; // Variável para a velocidade das rodas do carrinho
+const int VELOCIDADEMAX = 255; // Variável para a velocidade das rodas do carrinho
 
 //Sensor Ports Constants
 const int sensorLeft          = 22;
@@ -88,25 +88,25 @@ void extremeLeft(int velocity){
 }
 
 void moveToRight(int velocity){
-  M1.setSpeed(velocity-20);
-  M1.run(BACKWARD);
-  M2.setSpeed(velocity+20);
-  M2.run(FORWARD);
-  M3.setSpeed(velocity-20);
-  M3.run(BACKWARD);
-  M4.setSpeed(velocity+20);
-  M4.run(FORWARD);
+  M1.setSpeed(velocity-30);
+  M1.run(FORWARD);
+  M2.setSpeed(velocity);
+  M2.run(BACKWARD);
+  M3.setSpeed(velocity-30);
+  M3.run(FORWARD);
+  M4.setSpeed(velocity);
+  M4.run(BACKWARD);
 }
 
 void moveToLeft(int velocity){
-  M1.setSpeed(velocity+20);
-  M1.run(BACKWARD);
-  M2.setSpeed(velocity-20);
-  M2.run(FORWARD);
-  M3.setSpeed(velocity+20);
-  M3.run(BACKWARD);
-  M4.setSpeed(velocity-20);
-  M4.run(FORWARD);
+  M1.setSpeed(velocity);
+  M1.run(FORWARD);
+  M2.setSpeed(velocity-30);
+  M2.run(BACKWARD);
+  M3.setSpeed(velocity);
+  M3.run(FORWARD);
+  M4.setSpeed(velocity-30);
+  M4.run(BACKWARD);
 }
 
 void setup() {
@@ -161,39 +161,21 @@ void getInfraRedSensorsValue(){
 void loop() { 
 
   getUltraSensorsValue();
-  getInfraRedSensorsValue();
-
-    if( ultraMiddleState <= 30.0 ) {
-
-        // Se estiver muito próximo do alvo, deverá dar uma ré, parar e verificar qual lado poderá ir
-        //moveBackward(VELOCIDADEMAX);
-        
-        //delay(100);
-         
-        if(ultraLeftState < ultraRightState && ultraLeftState < 60.0 ){
-            moveToRight(VELOCIDADEMAX);
-        } else if( ultraRightState < ultraLeftState && ultraRightState < 60.0 ){
-            moveToLeft(VELOCIDADEMAX);
-        }
-
-        delay(80);
-              
-    } else if(ultraLeftState <= 30.0) {
+  //getInfraRedSensorsValue();
+  
+  if(ultraLeftState <= 10.0) {
       
           // Verifica o lado esquerdo para poder desviar para a direita
-          extremeRight(VELOCIDADEMAX);
+          moveToRight(VELOCIDADEMAX);
           
-    } else if(ultraRightState <= 30.0) {
+  } else if(ultraRightState <= 10.0) {
         
            // Verifica o lado direito para poder desviar para a esquerdo
-           extremeLeft(VELOCIDADEMAX);
+           moveToLeft(VELOCIDADEMAX);
            
-    } else {
+  } else {
         // Se não precisar desviar, irá seguir em frente
         moveForward(VELOCIDADEMAX);
-    }
-
-    // Delay para diminuir a auto frequência no carrinho
-    delay(150);
+  }
   
 }
